@@ -1,6 +1,6 @@
 {
   "name": "@superblocksteam/rockset",
-  "version": "0.1692.0",
+  "version": "0.1753.0",
   "description": "Rockset Plugin",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -27,7 +27,8 @@
     "@superblocksteam/shared": "^0.x",
     "@superblocksteam/shared-backend": "^0.x",
     "minimist": "1.2.6",
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "deasync": "0.1.26"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.170",
