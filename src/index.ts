@@ -20,7 +20,7 @@ export default class RocksetPlugin extends BasePlugin {
       const rocksetClient = rocksetConfigure(datasourceConfiguration.apiKey as string);
       const resp = await rocksetClient.queries.query({
         sql: {
-          query: actionConfiguration.body,
+          query: actionConfiguration.body ?? '',
           parameters: []
         }
       });
