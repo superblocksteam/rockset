@@ -7,22 +7,24 @@ import {
   IntegrationError,
   RawRequest
 } from '@superblocksteam/shared';
-import { BasePlugin, PluginExecutionProps } from '@superblocksteam/shared-backend';
+import { DatabasePlugin, PluginExecutionProps } from '@superblocksteam/shared-backend';
 
-export default class RocksetPlugin extends BasePlugin {
+export default class RocksetPlugin extends DatabasePlugin {
   pluginName = 'Rockset';
-  async execute({
+  public async execute({
     context,
     datasourceConfiguration,
     actionConfiguration
   }: PluginExecutionProps<RocksetDatasourceConfiguration>): Promise<ExecutionOutput> {
     try {
       const rocksetClient = rocksetConfigure(datasourceConfiguration.apiKey as string);
-      const resp = await rocksetClient.queries.query({
-        sql: {
-          query: actionConfiguration.body ?? '',
-          parameters: []
-        }
+      const resp = await this.executeQuery(() => {
+        return rocksetClient.queries.query({
+          sql: {
+            query: actionConfiguration.body ?? '',
+            parameters: []
+          }
+        });
       });
 
       const ret = new ExecutionOutput();
@@ -34,26 +36,28 @@ export default class RocksetPlugin extends BasePlugin {
     }
   }
 
-  getRequest(actionConfiguration: DBActionConfiguration): RawRequest {
+  public getRequest(actionConfiguration: DBActionConfiguration): RawRequest {
     return actionConfiguration?.body;
   }
 
-  dynamicProperties(): string[] {
+  public dynamicProperties(): string[] {
     return ['body'];
   }
 
-  async metadata(datasourceConfiguration: RocksetDatasourceConfiguration): Promise<DatasourceMetadataDto> {
+  public async metadata(datasourceConfiguration: RocksetDatasourceConfiguration): Promise<DatasourceMetadataDto> {
     return {};
   }
 
-  async test(datasourceConfiguration: RocksetDatasourceConfiguration): Promise<void> {
+  public async test(datasourceConfiguration: RocksetDatasourceConfiguration): Promise<void> {
     try {
       const rocksetClient = rocksetConfigure(datasourceConfiguration.apiKey as string);
-      await rocksetClient.queries.query({
-        sql: {
-          query: 'select CURRENT_DATE()',
-          parameters: []
-        }
+      await this.executeQuery(() => {
+        return rocksetClient.queries.query({
+          sql: {
+            query: 'select CURRENT_DATE()',
+            parameters: []
+          }
+        });
       });
     } catch (err) {
       throw new IntegrationError(`Test ${this.pluginName} connection failed, ${err.message}`);
